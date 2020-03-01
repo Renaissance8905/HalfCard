@@ -30,16 +30,6 @@ class ViewController: UIViewController {
 
 class PresenterVC: UIViewController {
     
-    lazy var animateIn = UIViewPropertyAnimator(duration: 1, curve: .easeOut) {
-        self.cardView.setPercentPresented(1)
-        self.cardView.layoutIfNeeded()
-    }
-    
-    lazy var animateOut = UIViewPropertyAnimator(duration: 1, curve: .easeOut) {
-        self.cardView.setPercentPresented(0)
-        self.cardView.layoutIfNeeded()
-    }
-    
     let cardView = TestCard()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,7 +91,7 @@ class PresenterVC: UIViewController {
 
 class TestCard: UIView {
     
-    let cardHeight: CGFloat = 500
+    let cardHeight: CGFloat = 400
     let topperHeight: CGFloat = 166
     
     private weak var cardHeightConstraint: NSLayoutConstraint?
@@ -210,15 +200,3 @@ class TestCard: UIView {
         }, completion: completion)
     }
 }
-
-
-
-class Presenter: UIPresentationController {
-    
-}
-
-class TransitionDelegate: UIPercentDrivenInteractiveTransition {
-    
-}
-
-

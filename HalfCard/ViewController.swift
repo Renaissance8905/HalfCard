@@ -55,7 +55,8 @@ class PresenterVC: UIViewController {
     }
     
     @objc func dismissCard() {
-        cardView.animateOut { _ in
+        cardView.animateOut { completed in
+            guard completed else { return }
             self.dismiss(animated: false, completion: nil)
         }
     }
@@ -70,7 +71,8 @@ class PresenterVC: UIViewController {
         
         switch gesture.state {
         case .began:
-            cardView.layer.removeAllAnimations()
+            
+            cardView.stop()
         case .changed:
             cardView.setPercentPresented(percent)
         case .ended:
@@ -161,6 +163,12 @@ class TestCard: UIView {
     
     var percentPresented: CGFloat = 0
     
+    func stop() {
+        layer.removeAllAnimations()
+        card.layer.removeAllAnimations()
+        topper.layer.removeAllAnimations()
+    }
+    
     func setPercentPresented(_ percent: CGFloat) {
         percentPresented = percent
         let invertPercent = 1 - percent
@@ -186,7 +194,7 @@ class TestCard: UIView {
                        delay: 0,
                        usingSpringWithDamping: 0.5,
                        initialSpringVelocity: 0.2,
-                       options: .curveEaseOut,
+                       options: [.curveEaseOut, .allowUserInteraction],
                        animations: animations,
                        completion: completion)
         
@@ -194,9 +202,13 @@ class TestCard: UIView {
 
     func animateOut(_ completion: ((Bool) -> Void)? = nil) {
         layoutIfNeeded()
-        UIView.animate(withDuration: 0.5 * Double(percentPresented), animations: {
-            self.setPercentPresented(0)
-            self.layoutIfNeeded()
-        }, completion: completion)
+        UIView.animate(withDuration: 0.5 * Double(percentPresented),
+                       delay: 0,
+                       options: [.allowUserInteraction],
+                       animations: {
+                        self.setPercentPresented(0)
+                        self.layoutIfNeeded()
+        },
+                       completion: completion)
     }
 }

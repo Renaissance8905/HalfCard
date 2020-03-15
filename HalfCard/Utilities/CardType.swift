@@ -22,7 +22,7 @@ enum CardType {
     
     var bottomGap: CGFloat {
         // special allowance for the home bar
-        max(gap, 24)
+        self == .floating ? max(gap, 24) : 0
     }
     
 }

@@ -19,7 +19,6 @@
 		D4BABD1D240A4875009E5435 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4BABD1B240A4875009E5435 /* Main.storyboard */; };
 		D4BABD1F240A4877009E5435 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4BABD1E240A4877009E5435 /* Assets.xcassets */; };
 		D4BABD22240A4877009E5435 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4BABD20240A4877009E5435 /* LaunchScreen.storyboard */; };
-		D4BABD2A240C5AB0009E5435 /* AnimationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BABD29240C5AB0009E5435 /* AnimationTest.swift */; };
 		D4BABD2C240CD0BC009E5435 /* HalfCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BABD2B240CD0BC009E5435 /* HalfCard.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,7 +37,6 @@
 		D4BABD1E240A4877009E5435 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4BABD21240A4877009E5435 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4BABD23240A4877009E5435 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4BABD29240C5AB0009E5435 /* AnimationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationTest.swift; sourceTree = "<group>"; };
 		D4BABD2B240CD0BC009E5435 /* HalfCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,7 +113,6 @@
 				D4A432ED240F8B3800C6810E /* Entry Point */,
 				D4A432EC240F8B0A00C6810E /* Transition Family */,
 				D4BABD2B240CD0BC009E5435 /* HalfCard.swift */,
-				D4BABD29240C5AB0009E5435 /* AnimationTest.swift */,
 				D4A432EF240F8B6300C6810E /* Utilities */,
 				D4A432EE240F8B5600C6810E /* Resources */,
 				D4BABD23240A4877009E5435 /* Info.plist */,
@@ -201,7 +198,6 @@
 				D4A432E1240F7CF600C6810E /* Presentationer.swift in Sources */,
 				D4A432E3240F88AB00C6810E /* CardType.swift in Sources */,
 				D4BABD16240A4875009E5435 /* AppDelegate.swift in Sources */,
-				D4BABD2A240C5AB0009E5435 /* AnimationTest.swift in Sources */,
 				D4A432E5240F88E800C6810E /* CardHeight.swift in Sources */,
 				D4BABD18240A4875009E5435 /* SceneDelegate.swift in Sources */,
 				D4A432EB240F8A6A00C6810E /* PresenationAnimator.swift in Sources */,

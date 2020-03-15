@@ -26,18 +26,20 @@ class TestCard: UIView, InteractiveModalCard {
     }
     
     func installConstraints() {
-        
+
         backgroundColor = .white
         addSubview(topper)
-        
-        cardHeightConstraint = heightAnchor.constraint(equalToConstant: cardHeight)
-        cardHeightConstraint?.isActive = true
-        
+
         topper.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8).isActive = true
         topper.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         topper.centerYAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         topper.heightAnchor.constraint(equalToConstant: topperHeight).isActive = true
-        
+
+        addSubview(testText)
+        testText.translatesAutoresizingMaskIntoConstraints = false
+        testText.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        testText.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        testText.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8).isActive = true
     }
     
     func installTail(on card: UIView) {
@@ -50,6 +52,14 @@ class TestCard: UIView, InteractiveModalCard {
         tail.heightAnchor.constraint(equalToConstant: cardHeight).isActive = true
         
     }
+
+    let testText: UILabel = {
+        let label = UILabel(frame: .zero)
+        label.numberOfLines = 0
+        label.textColor = .brown
+        label.text = "This is some test text. What I'm hoping it will do is float at roughly the current center of the card view, and most importantly, not stretch or get wonky when the view stretches at >100% scenarios. Let's see how we do."
+        return label
+    }()
 
     let tail: UIView = {
         let view = UIView(frame: .zero)
@@ -71,11 +81,17 @@ class TestCard: UIView, InteractiveModalCard {
     func setPercentPresented(_ percent: CGFloat) {
         percentPresented = percent
         let invertPercent = 1 - percent
-        
-        transform = CGAffineTransform(translationX: 0, y: cardHeight * max(0, invertPercent))
-        cardHeightConstraint?.constant = cardHeight * max(1, percent)
-        topper.transform = CGAffineTransform(translationX: 0, y: topperHeight / 2 * invertPercent)
-        
+
+        let scaleTransform = positiveStretchTransform(dY: percent)
+        let invertedScaleTransform = scaleTransform.inverted()
+
+        let variantSlide = percent > 1 ? min(0, 1 + ((-1 - percent) / 2)) : max(0, invertPercent)
+        let positionTransform = CGAffineTransform(translationX: 0, y: cardHeight * variantSlide)
+        transform = scaleTransform.concatenating(positionTransform)
+        subviews.forEach { $0.transform = invertedScaleTransform }
+
+        topper.transform = CGAffineTransform(translationX: 0, y: topperHeight / 2 * invertPercent).concatenating(invertedScaleTransform)
+
     }
     
     func animateIn(_ completion: ((Bool) -> Void)? = nil) {

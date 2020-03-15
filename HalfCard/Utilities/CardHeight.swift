@@ -43,3 +43,18 @@ enum CardHeight {
     }
     
 }
+
+
+extension UIView {
+
+    func positiveStretchTransform(dX: CGFloat? = nil, dY: CGFloat? = nil) -> CGAffineTransform {
+        CGAffineTransform(scaleX: stretchFactor(dX, for: frame.width),
+                          y: stretchFactor(dY, for: frame.height))
+    }
+
+    private func stretchFactor(_ percent: CGFloat?, for ref: CGFloat) -> CGFloat {
+        guard let percent = percent else { return 1 }
+        return max(1, ceil(ref * percent) / ref)
+    }
+
+}

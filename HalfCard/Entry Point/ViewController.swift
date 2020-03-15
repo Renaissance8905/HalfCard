@@ -30,7 +30,8 @@ class ViewController: UIViewController {
     }
     
     @objc private func onTap() {
-        let vc = PresenterVC()
+        let vc = UIViewController()
+        vc.view = TestCard()
         vc.modalPresentationStyle = .custom
         vc.transitioningDelegate = coordinator
         present(vc, animated: true, completion: nil)

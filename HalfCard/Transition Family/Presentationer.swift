@@ -12,6 +12,8 @@ class Presentationer: UIPresentationController {
     
     private let cardType: CardType = .floating
     private let cardHeight: CardHeight = .half
+
+    private weak var cardView: TestCard?
     
     private lazy var blurEffectView: UIVisualEffectView = {
         let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -23,7 +25,46 @@ class Presentationer: UIPresentationController {
         
         return blurEffectView
     }()
-    
+
+    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
+        cardView = presentedViewController.view as? TestCard
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(onPan))
+        cardView?.addGestureRecognizer(pan)
+
+    }
+
+    @objc private func onPan(_ gesture: UIPanGestureRecognizer) {
+        guard let cardView = gesture.view as? TestCard else { return }
+
+        var percent: CGFloat = 1 - (gesture.translation(in: cardView).y / cardView.cardHeight)
+
+        if percent > 1 {
+            percent = sqrt(percent)
+        }
+
+        switch gesture.state {
+        case .began:
+            cardView.layer.removeAllAnimations()
+        case .changed:
+            cardView.setPercentPresented(percent)
+            blurEffectView.alpha = percent
+        case .ended:
+            if cardView.percentPresented < 0.7 && gesture.velocity(in: cardView).y >= 0 {
+                dismiss()
+            } else {
+                cardView.animateIn()
+            }
+
+        case .cancelled:
+            cardView.animateIn()
+        default:
+            return
+        }
+
+    }
+
     @objc private func dismiss() {
         presentedViewController.dismiss(animated: true, completion: nil)
     }
@@ -50,11 +91,11 @@ class Presentationer: UIPresentationController {
     override func presentationTransitionWillBegin() {
         blurEffectView.alpha = 0
         containerView?.addSubview(blurEffectView)
-        (presentedView as? TestCard)?.setPercentPresented(0)
+        cardView?.setPercentPresented(0)
         
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (UIViewControllerTransitionCoordinatorContext) in
             self.blurEffectView.alpha = 1
-            (self.presentedView as? TestCard)?.setPercentPresented(1)
+            self.cardView?.setPercentPresented(1)
         }, completion: nil)
     }
     

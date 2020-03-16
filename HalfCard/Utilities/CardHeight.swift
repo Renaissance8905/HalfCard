@@ -58,3 +58,44 @@ extension UIView {
     }
 
 }
+
+extension CGFloat {
+
+    func normalized(on ref: CGFloat) -> CGFloat {
+        ceil(self * ref) / ref
+    }
+
+    func tapered(after baseline: CGFloat) -> CGFloat {
+        self <= baseline ? self : sqrt(self - baseline) + baseline
+    }
+
+    mutating func taper(after baseline: CGFloat) {
+        self = tapered(after: baseline)
+    }
+}
+
+extension UIPanGestureRecognizer {
+
+    enum SnapDirection {
+        case up, down, none
+    }
+
+    func snapTo(in view: UIView) -> SnapDirection {
+        let v = velocity(in: view).y
+        if v > 1500 { return .down }
+        if v < -1500 { return .up }
+        return .none
+    }
+
+    func isDown(in view: UIView) -> Bool {
+        velocity(in: view).y >= 0
+    }
+
+    func percentY(in cardView: CardView, isCardOpen: Bool) -> CGFloat {
+        var percent: CGFloat = 1 - (translation(in: cardView).y / cardView.cardHeight)
+        percent *= (isCardOpen ? 2 : 1)
+        return percent.tapered(after: 2)
+
+    }
+
+}

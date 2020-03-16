@@ -15,7 +15,7 @@ class PresentationAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
     let direction: PresentationDirection
 
-    var key: UITransitionContextViewKey {
+    var key: UITransitionContextViewControllerKey {
         direction == .present ? .to : .from
     }
 
@@ -29,16 +29,20 @@ class PresentationAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let card = transitionContext.view(forKey: key) as? TestCard else { return }
-        
+        guard
+            let viewController = transitionContext.viewController(forKey: key),
+            let card = viewController.view as? TestCard,
+            let presenter = viewController.presentationController as? Presentationer
+        else { return }
+
         switch direction {
         case .present:
             transitionContext.containerView.addSubview(card)
-            card.setPercentPresented(0)
-            card.animateIn(transitionContext.completeTransition)
+            presenter.setPercentPresented(0)
+            presenter.animateToCard(transitionContext.completeTransition)
 
         case .dismiss:
-            card.animateOut(transitionContext.completeTransition)
+            presenter.animateOut(transitionContext.completeTransition)
         }
 
     }

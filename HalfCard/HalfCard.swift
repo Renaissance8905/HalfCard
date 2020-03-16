@@ -8,13 +8,30 @@
 
 import UIKit
 
-class TestCard: UIView, InteractiveModalCard {
+enum CardDisplayMode {
+    case closed, card, full
+
+    static func nearest(to percent: CGFloat) -> CardDisplayMode {
+        if percent > 1.2 { return full }
+        if percent < 0.7 { return closed }
+        return card
+    }
+}
+
+protocol CardView where Self: UIView {
+    var displayMode: CardDisplayMode { get set }
+    var cardHeight: CGFloat { get }
+
+    func setPercentPresented(_: CGFloat)
+}
+
+class TestCard: UIView, CardView {
+
+    var displayMode: CardDisplayMode = .closed
     
     let cardHeight: CGFloat = 400
-    let topperHeight: CGFloat = 166
-    
-    private weak var cardHeightConstraint: NSLayoutConstraint?
-    
+    private let topperHeight: CGFloat = 166
+
     init() {
         super.init(frame: .zero)
         
@@ -27,7 +44,7 @@ class TestCard: UIView, InteractiveModalCard {
     
     func installConstraints() {
 
-        backgroundColor = .white
+        backgroundColor = .black
         addSubview(topper)
 
         topper.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8).isActive = true
@@ -41,17 +58,13 @@ class TestCard: UIView, InteractiveModalCard {
         testText.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         testText.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8).isActive = true
     }
-    
-    func installTail(on card: UIView) {
-        
-        card.addSubview(tail)
 
-        tail.topAnchor.constraint(equalTo: card.bottomAnchor).isActive = true
-        tail.leadingAnchor.constraint(equalTo: card.leadingAnchor).isActive = true
-        tail.trailingAnchor.constraint(equalTo: card.trailingAnchor).isActive = true
-        tail.heightAnchor.constraint(equalToConstant: cardHeight).isActive = true
-        
-    }
+    let contentView: UIView = {
+        let view = UIView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .lightGray
+        return view
+    }()
 
     let testText: UILabel = {
         let label = UILabel(frame: .zero)
@@ -61,69 +74,38 @@ class TestCard: UIView, InteractiveModalCard {
         return label
     }()
 
-    let tail: UIView = {
-        let view = UIView(frame: .zero)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
-        return view
-    }()
-    
     let topper: UIView = {
-        let view = UIView(frame: .zero)
+        let view = UIImageView(image: UIImage(named: "splash"))
+        view.contentMode = .scaleAspectFill
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .blue
         view.layer.cornerRadius = 12
+        view.clipsToBounds = true
         return view
     }()
-    
-    var percentPresented: CGFloat = 0
-    
+
     func setPercentPresented(_ percent: CGFloat) {
-        percentPresented = percent
-        let invertPercent = 1 - percent
+        let percent = min(2, percent)
+        let threshold: CGFloat = 1.5
+        let overage = max(0, (percent - threshold) * 2)
 
-        let scaleTransform = positiveStretchTransform(dY: percent)
-        let invertedScaleTransform = scaleTransform.inverted()
+        let multiplier: CGFloat = 1.5 - (overage * 1.8)
+        let factor = min((1 - percent) * multiplier, 1)
+        let translation = CGAffineTransform(translationX: 0,
+                                            y: topperHeight / 2 * factor)
 
-        let variantSlide = percent > 1 ? min(0, 1 + ((-1 - percent) / 2)) : max(0, invertPercent)
-        let positionTransform = CGAffineTransform(translationX: 0, y: cardHeight * variantSlide)
-        transform = scaleTransform.concatenating(positionTransform)
-        subviews.forEach { $0.transform = invertedScaleTransform }
+        topper.layer.cornerRadius = 12 * (1 - overage)
 
-        topper.transform = CGAffineTransform(translationX: 0, y: topperHeight / 2 * invertPercent).concatenating(invertedScaleTransform)
+        let range = (superview ?? self).frame.width / topper.frame.width
+        let pctDelta = ((range - 1) * overage) + 1
+        let delta = max(1, min(pctDelta, range))
+
+        let scaleTransform = topper.positiveStretchTransform(dX: delta, dY: delta)
+
+        topper.transform =
+            translation
+            .concatenating(scaleTransform)
+            .concatenating(topper.transform)
 
     }
-    
-    func animateIn(_ completion: ((Bool) -> Void)? = nil) {
-        
-        let animations: () -> Void = {
-            self.setPercentPresented(1)
-            self.layoutIfNeeded()
-        }
-        
-        layoutIfNeeded()
-        UIView.animate(withDuration: 0.7,
-                       delay: 0,
-                       usingSpringWithDamping: 0.5,
-                       initialSpringVelocity: 0.2,
-                       options: .curveEaseOut,
-                       animations: animations,
-                       completion: completion)
-        
-    }
 
-    func animateOut(_ completion: ((Bool) -> Void)? = nil) {
-        
-        let animations: () -> Void = {
-            self.setPercentPresented(-0.1)
-            self.layoutIfNeeded()
-        }
-        
-        layoutIfNeeded()
-        UIView.animate(withDuration: 0.5 * Double(percentPresented),
-                       animations: animations,
-                       completion: completion)
-        
-    }
-    
 }
